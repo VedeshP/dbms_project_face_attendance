@@ -1,0 +1,15 @@
+INSERT INTO STUDENT_GROUP (GROUP_ID, GROUP_NAME, DIVISION_ID) VALUES 
+('G1', 'Group 1', 'D1'),
+('G2', 'Group 2', 'D1'),
+('G3', 'Group 3', 'D2'),
+('G4', 'Group 4', 'D2'),
+('G5', 'Group 5', 'D3'),
+('G6', 'Group 6', 'D3'),
+('G7', 'Group 7', 'D4'),
+('G8', 'Group 8', 'D4'),
+('G9', 'Group 9', 'D5'),
+('G10', 'Group 10', 'D5'),
+('G11', 'Group 11', 'D6'),
+('G12', 'Group 12', 'D6'),
+('G13', 'Group 13', 'D7'),
+('G14', 'Group 14', 'D7');
