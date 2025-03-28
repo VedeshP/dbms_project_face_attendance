@@ -18,6 +18,7 @@ INSERT INTO PROGRAM (PROGRAM_ID, PROGRAM_NAME, SCHOOL_ID, PROGRAM_LEVEL) VALUES
 ('PHD_ENG', 'Ph.D. in Various Engineering Disciplines', 'SoT', 'Doctoral');
 
 -- School of Energy Technology (SoET)
+-- currently not added these below lines
 INSERT INTO PROGRAM (PROGRAM_ID, PROGRAM_NAME, SCHOOL_ID, PROGRAM_LEVEL) VALUES 
 ('BTECH_PET', 'B.Tech. in Petroleum Engineering', 'SoET', 'Undergraduate'),
 ('BTECH_PCHEM', 'B.Tech. in Petrochemical Engineering', 'SoET', 'Undergraduate'),
