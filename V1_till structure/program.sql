@@ -17,7 +17,13 @@ INSERT INTO PROGRAM (PROGRAM_ID, PROGRAM_NAME, SCHOOL_ID, PROGRAM_LEVEL) VALUES
 ('MSC_CHEM', 'M.Sc. in Chemistry', 'SoT', 'Postgraduate'),
 ('PHD_ENG', 'Ph.D. in Various Engineering Disciplines', 'SoT', 'Doctoral');
 
+
+-- ece added new - on - 19:01 23-04-2025
+INSERT INTO PROGRAM (PROGRAM_ID, PROGRAM_NAME, SCHOOL_ID, PROGRAM_LEVEL) VALUES 
+('BTECH_ECE', 'B.Tech. in Electronics and Communication Engineering', 'SoT', 'Undergraduate');
+
 -- School of Energy Technology (SoET)
+-- currently not added these below lines
 INSERT INTO PROGRAM (PROGRAM_ID, PROGRAM_NAME, SCHOOL_ID, PROGRAM_LEVEL) VALUES 
 ('BTECH_PET', 'B.Tech. in Petroleum Engineering', 'SoET', 'Undergraduate'),
 ('BTECH_PCHEM', 'B.Tech. in Petrochemical Engineering', 'SoET', 'Undergraduate'),
