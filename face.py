@@ -5,8 +5,7 @@ from sqlalchemy import create_engine, text
 from datetime import date, timedelta
 import sys
 import os
-# No argparse needed if course_id is hardcoded
-# import argparse # For command-line arguments
+import argparse # For command-line arguments
 
 # face rec lib in python 3.12.4 - global interpreter
 
@@ -25,9 +24,6 @@ ATTENDANCE_STUDENT_ID_COL = "STUDENT_ID"
 ATTENDANCE_COURSE_ID_COL = "COURSE_ID"
 ATTENDANCE_DATE_COL = "DATE"
 ATTENDANCE_STATUS_COL = "STATUS"
-
-# --- Enrollment Table Name ---
-ENROLLMENT_TABLE = "ENROLLMENT" # Added for clarity
 
 # --- Global Variables ---
 known_face_encodings = []
@@ -63,13 +59,6 @@ def load_known_students_from_db(engine):
             count = 0
             skipped = 0
             for student_id, name, image_path in students:
-                # Use double backslashes or forward slashes for paths in Python strings
-                # Correcting potential path issues if read directly from DB might be needed
-                # image_path = image_path.replace('\\', '/') # Example correction
-                
-                # but here i have added '/' only in the database while i was writing the queries to add the path
-
-                
                 if not image_path or not os.path.exists(image_path):
                     print(f"Warning: Image path '{image_path}' for student {student_id} ({name}) not found or is empty. Skipping.")
                     skipped += 1
@@ -128,7 +117,10 @@ def mark_attendance(engine, student_id, course_id, attendance_date):
                 "att_date": attendance_date,
                 "status": status
             })
+            # INSERT IGNORE doesn't strictly need commit() in some SQLAlchemy autocommit scenarios,
+            # but explicit is often safer depending on context.
             connection.commit()
+            # print(f"Attendance marked for {student_id} in {course_id} on {attendance_date}")
             return True # Indicate success or that the record potentially already existed
 
     except Exception as e:
@@ -138,7 +130,12 @@ def mark_attendance(engine, student_id, course_id, attendance_date):
 # --- Main Application Logic ---
 if __name__ == "__main__":
 
-    # --- Set the Course ID directly ---
+    # --- Argument Parser for Course ID ---
+    # parser = argparse.ArgumentParser(description="Facial Recognition Attendance System")
+    # parser.add_argument("course_id", help="The Course ID (e.g., CS101) for which attendance is being taken.")
+    # args = parser.parse_args()
+    # current_course_id = args.course_id
+    
     # current_course_id = "20CP206T"
     # current_course_id = "20CP207P"
     # current_course_id = "20CP207T"
@@ -147,6 +144,7 @@ if __name__ == "__main__":
     # current_course_id = "20CP209P"
     # current_course_id = "20CP209T"
     current_course_id = "20CP210P"
+
     print(f"Starting attendance system for Course ID: {current_course_id}")
 
     # --- Database Engine ---
@@ -157,7 +155,11 @@ if __name__ == "__main__":
 
     # --- Load Known Faces ---
     if not load_known_students_from_db(engine):
+        # Decide whether to continue if no faces are loaded
+        # print("No known student faces loaded. Cannot perform recognition.")
+        # sys.exit(1) # Exit if no known faces are essential
         print("Warning: No known student faces loaded. Only 'Unknown' will be detected.")
+
 
     # --- Webcam Initialization ---
     cap = cv2.VideoCapture(0)
@@ -165,13 +167,13 @@ if __name__ == "__main__":
         sys.exit("Error: Could not open webcam.")
     print("Webcam opened successfully.")
 
-    # --- Get Attendance Date ---
+    # --- Get Today's Date ---
     # today_date = date.today()
-    # today_date = date.today() - timedelta(days=1) # Using yesterday's date as per your code
-    today_date = date.today()
+    today_date = date.today() - timedelta(days=1)
     print(f"Attendance Date: {today_date}")
 
     # --- Keep track of students marked present in this session ---
+    # This prevents repeatedly hitting the database for the same student during one run
     students_marked_today_session = set()
 
     # --- Processing Loop ---
@@ -182,71 +184,48 @@ if __name__ == "__main__":
                 print("Warning: Failed to grab frame from webcam.")
                 continue # Try next frame
 
-            # Resize frame for faster processing
+            # Resize frame for faster processing (optional, adjust fx/fy as needed)
             small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+
             # Convert BGR (OpenCV) to RGB (face_recognition)
             rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
 
-            # Find face locations and encodings
-            face_locations = face_recognition.face_locations(rgb_small_frame)
+            # Find face locations and encodings in the current frame
+            face_locations = face_recognition.face_locations(rgb_small_frame) # model='hog' is faster, 'cnn' is more accurate
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-            current_frame_face_names = []
+            current_frame_face_names = [] # Names detected in this specific frame
 
-            # Process detected faces only if known faces are loaded
+            # Only try to recognize if known faces were loaded
             if known_face_encodings:
                 for face_encoding in face_encodings:
-                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.55)
+                    # Compare face to known faces
+                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.55) # Adjust tolerance
                     student_id = "Unknown"
                     display_name = "Unknown"
 
+                    # Find the best match if any
                     face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                    if len(face_distances) > 0:
+                    if len(face_distances) > 0: # Check if there are any known faces to compare against
                         best_match_index = np.argmin(face_distances)
                         if matches[best_match_index]:
                             student_id = known_student_ids[best_match_index]
-                            display_name = known_student_names.get(student_id, "Known (Name N/A)")
+                            display_name = known_student_names.get(student_id, "Known (Name N/A)") # Use stored name
 
-                            # --- V V V --- ADDED ENROLLMENT CHECK --- V V V ---
-                            if student_id != "Unknown": # Only check enrollment if recognized
-                                is_enrolled = False # Assume not enrolled initially
-                                try:
-                                    with engine.connect() as connection:
-                                        # Prepare the check query using text() for parameters
-                                        check_query = text(f"""
-                                            SELECT COUNT(*) FROM {ENROLLMENT_TABLE}
-                                            WHERE {ATTENDANCE_STUDENT_ID_COL} = :sid AND {ATTENDANCE_COURSE_ID_COL} = :cid
-                                        """)
-                                        # Execute with current student_id and course_id
-                                        result = connection.execute(check_query, {"sid": student_id, "cid": current_course_id})
-                                        enrollment_count = result.scalar() # Gets the count
-
-                                        if enrollment_count is not None and enrollment_count > 0:
-                                            is_enrolled = True
-
-                                except Exception as e:
-                                    print(f"DB Error checking enrollment for {student_id} in {current_course_id}: {e}")
-                                    # Decide how to handle DB error, e.g., skip marking attendance for this frame
-
-                                # --- Mark Attendance ONLY if Recognized AND Enrolled ---
-                                if is_enrolled:
-                                    # Now, proceed with the logic to mark attendance if not already marked in session
-                                    if student_id not in students_marked_today_session:
-                                        print(f"Recognized & Enrolled: {display_name} ({student_id}). Attempting to mark attendance...")
-                                        if mark_attendance(engine, student_id, current_course_id, today_date):
-                                            print(f"-> Attendance successfully recorded for {display_name} ({student_id})")
-                                            students_marked_today_session.add(student_id)
-                                        else:
-                                            print(f"-> Failed to record attendance for {display_name} ({student_id})")
-                                    # else: # Optional: print if already marked in this session
-                                    #     pass # print(f"Already marked {display_name} in this session.")
+                            # Mark attendance if not already marked in this session
+                            if student_id != "Unknown" and student_id not in students_marked_today_session:
+                                print(f"Recognized: {display_name} ({student_id}). Attempting to mark attendance...")
+                                if mark_attendance(engine, student_id, current_course_id, today_date):
+                                    print(f"-> Attendance successfully recorded (or already existed) for {display_name} ({student_id})")
+                                    students_marked_today_session.add(student_id)
                                 else:
-                                    # Student recognized but not enrolled in this specific course
-                                    print(f"Recognized: {display_name} ({student_id}) but NOT ENROLLED in course {current_course_id}. Attendance not marked.")
-                            # --- ^ ^ ^ --- END OF ENROLLMENT CHECK --- ^ ^ ^ ---
+                                    print(f"-> Failed to record attendance for {display_name} ({student_id})")
+                            elif student_id != "Unknown":
+                                # Already marked in this session, no need to hit DB again
+                                pass # print(f"Already marked {display_name} in this session.")
 
 
-                    current_frame_face_names.append(display_name) # Add name for display
+                    current_frame_face_names.append(display_name) # Add name (or "Unknown") for display
 
             else: # If no known faces loaded, all are Unknown
                 for _ in face_locations:
@@ -255,14 +234,14 @@ if __name__ == "__main__":
 
             # --- Display Results on the Original Frame ---
             for (top, right, bottom, left), name in zip(face_locations, current_frame_face_names):
-                # Scale back up face locations
+                # Scale back up face locations to original frame size
                 top *= 2
                 right *= 2
                 bottom *= 2
                 left *= 2
 
                 # Draw rectangle and label
-                color = (0, 255, 0) if name != "Unknown" else (0, 0, 255)
+                color = (0, 255, 0) if name != "Unknown" else (0, 0, 255) # Green for known, Red for unknown
                 cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
                 cv2.rectangle(frame, (left, bottom - 25), (right, bottom), color, cv2.FILLED)
                 font = cv2.FONT_HERSHEY_DUPLEX
@@ -289,4 +268,4 @@ if __name__ == "__main__":
         cv2.destroyAllWindows()
         print("OpenCV windows closed.")
         print(f"Students marked present during this session: {len(students_marked_today_session)}")
-        print(sorted(list(students_marked_today_session))) # Print the list of IDs marked, sorted
+        print(list(students_marked_today_session)) # Print the list of IDs marked
