@@ -138,7 +138,4 @@ If you found this project helpful or interesting, please consider giving it a тн
 
 ```
 
----
 
-Let me know if you want me to add a badge section or visuals like GitHub stats in the README too!
-```
