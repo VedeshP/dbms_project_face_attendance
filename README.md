@@ -1,8 +1,8 @@
-Thanks for sharing your repo! Here's a **complete and professional `README.md`** you can use for your [Face Attendance DBMS Project](https://github.com/chetangadhiya4939/Fork_dbms_project_face_attendance). It's structured to impress recruiters, collaborators, or evaluators:
 
----
 
-````markdown
+
+
+
 # 👤 Face Recognition-Based Attendance System (DBMS Project)
 
 A **Face Recognition Attendance System** built using Python, OpenCV, Tkinter, and MySQL. This project automates the attendance process by recognizing faces in real-time and recording attendance into a database, eliminating the need for manual roll calls.
@@ -36,7 +36,7 @@ A **Face Recognition Attendance System** built using Python, OpenCV, Tkinter, an
 
 ## 🖥️ Screenshots
 
-> *(You can add screenshots here in Markdown format once available)*
+<!-- > *(You can add screenshots here in Markdown format once available)* -->
 
 ---
 
@@ -123,6 +123,7 @@ python main.py
 ## 🤝 Contributors
 
 * [Chetan Gadhiya](https://github.com/chetangadhiya4939)
+* [Vedesh Pandya](https://github.com/VedeshP)
 
 ---
 
@@ -136,6 +137,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 If you found this project helpful or interesting, please consider giving it a ⭐️ to support the work!
 
-```
+
 
 
