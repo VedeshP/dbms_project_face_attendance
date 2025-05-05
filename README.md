@@ -1,80 +1,90 @@
+````markdown
+<h1 align="center">👤 Face Recognition Attendance System</h1>
+<p align="center">
+  <img src="https://img.shields.io/badge/DBMS-PROJECT-blue.svg?style=for-the-badge">
+  <img src="https://img.shields.io/github/stars/chetangadhiya5062/Fork_dbms_project_face_attendance?style=for-the-badge">
+  <img src="https://img.shields.io/github/forks/chetangadhiya5062/Fork_dbms_project_face_attendance?style=for-the-badge">
+</p>
 
-
-
-
-
-# 👤 Face Recognition-Based Attendance System (DBMS Project)
-
-A **Face Recognition Attendance System** built using Python, OpenCV, Tkinter, and MySQL. This project automates the attendance process by recognizing faces in real-time and recording attendance into a database, eliminating the need for manual roll calls.
+<p align="center">📸 A smart Face Recognition system to automate student attendance using Python, OpenCV, Tkinter, and MySQL. ✨</p>
 
 ---
 
-## 📌 Features
+## ✨ Features
 
-- 🎥 Real-time face detection & recognition using OpenCV
-- 📂 Student registration with photo capture
-- 🕵️‍♂️ Face data training with LBPH algorithm
-- 🧾 Attendance logging with date and time
-- 🗃️ Attendance records stored in MySQL database
-- 🖼️ GUI built using Tkinter
-- 📋 Export attendance to CSV
+- 🎥 Real-time face detection and recognition with OpenCV
+- 📝 Auto logs attendance with name, date & time
+- 👤 Student registration with photo capture
+- 📚 Trains face data using LBPH algorithm
+- 📊 Attendance records saved in MySQL
+- 🖼️ GUI powered by Tkinter
+- 📤 Export attendance to CSV format
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| `Python`   | Core language |
-| `OpenCV`   | Face detection and recognition |
-| `Tkinter`  | GUI development |
-| `MySQL`    | Backend database |
-| `PIL`      | Image processing |
-| `CSV`      | Export attendance reports |
+| Tool        | Purpose                          |
+|-------------|----------------------------------|
+| `Python`    | Core programming language        |
+| `OpenCV`    | Image processing & face detection|
+| `Tkinter`   | Graphical User Interface (GUI)   |
+| `MySQL`     | Backend database                 |
+| `PIL`       | Image handling                   |
+| `CSV`       | Export reports                   |
 
 ---
 
-## 🖥️ Screenshots
+## 📷 UI Preview & Demo
 
-<!-- > *(You can add screenshots here in Markdown format once available)* -->
+| 👨‍🎓 Register Student | 📸 Face Detection | 🧾 Attendance |
+|----------------------|------------------|---------------|
+| ![register](images/register.png) | ![detect](images/detect.png) | ![attendance](images/attendance.png) |
+
+> *(Replace above with your own screenshots in a `images/` folder)*
 
 ---
 
-## 🚀 How to Run
+## 🚀 Getting Started
 
-### 1. Clone the Repo
+### 🔁 Clone the Repository
 
 ```bash
-git clone https://github.com/chetangadhiya4939/Fork_dbms_project_face_attendance.git
+git clone https://github.com/chetangadhiya5062/Fork_dbms_project_face_attendance.git
 cd Fork_dbms_project_face_attendance
 ````
 
-### 2. Install Dependencies
-
-Make sure you have Python 3.7+ installed.
+### 📦 Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-> If `requirements.txt` is missing, manually install:
+> If `requirements.txt` not found:
 
 ```bash
 pip install opencv-python pillow mysql-connector-python
 ```
 
-### 3. Setup MySQL Database
+### 🛠️ Set Up MySQL
 
-* Open your MySQL client
-* Create a database:
+1. Login to MySQL:
+
+```bash
+mysql -u root -p
+```
+
+2. Create Database:
 
 ```sql
 CREATE DATABASE face_recognition;
 ```
 
-* Update database credentials in `student.py` and `attendance.py` (if hardcoded).
+3. Update credentials in `database.py` as needed.
 
-### 4. Run the App
+---
+
+### ▶️ Run the App
 
 ```bash
 python main.py
@@ -84,59 +94,67 @@ python main.py
 
 ## 🧠 Modules Overview
 
-| Module                | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `main.py`             | Entry point GUI                              |
-| `student.py`          | Student registration                         |
-| `train.py`            | Train face recognizer                        |
-| `face_recognition.py` | Real-time recognition and attendance marking |
-| `attendance.py`       | Manage and export attendance records         |
-| `database.py`         | Connects to MySQL DB                         |
+| File                  | Purpose                                 |
+| --------------------- | --------------------------------------- |
+| `main.py`             | Main GUI launcher                       |
+| `student.py`          | Capture & register student faces        |
+| `train.py`            | Train model using LBPH face recognizer  |
+| `face_recognition.py` | Real-time face recognition & attendance |
+| `attendance.py`       | Export attendance to CSV                |
+| `database.py`         | Connects to MySQL                       |
 
 ---
 
-## 📁 Project Structure
+## 🗂️ Folder Structure
 
 ```
-├── dataset/              # Captured face images
-├── attendance/           # Attendance CSVs
-├── trainer/              # Trained model file
-├── icons/                # GUI Icons
-├── main.py               # Main GUI file
-├── student.py            # Student data input
-├── face_recognition.py   # Face recognition module
-├── train.py              # Model training
-└── database.py           # MySQL connectivity
+.
+├── attendance/         # CSV logs
+├── dataset/            # Captured face images
+├── trainer/            # Trained model
+├── icons/              # App icons
+├── images/             # Screenshots for README
+├── main.py
+├── student.py
+├── face_recognition.py
+├── train.py
+└── database.py
 ```
 
 ---
 
-## ✅ To-Do / Improvements
+## 🔮 Future Improvements
 
-* [ ] Add face mask detection
-* [ ] Improve GUI design
-* [ ] Implement email notification
-* [ ] Dockerize the app
-
----
-
-## 🤝 Contributors
-
-* [Chetan Gadhiya](https://github.com/chetangadhiya4939)
-* [Vedesh Pandya](https://github.com/VedeshP)
+* [ ] Add Face Mask Detection
+* [ ] Improve UI design with custom themes
+* [ ] Implement Email/SMS alerts for absentee
+* [ ] Dockerize for easy deployment
+* [ ] Enable admin login system
 
 ---
 
-## 📄 License
+## 👥 Contributors
 
-This project is open source and available under the [MIT License](LICENSE).
+| Name           | GitHub                                                     |
+| -------------- | ---------------------------------------------------------- |
+| Chetan Gadhiya | [@chetangadhiya5062](https://github.com/chetangadhiya5062) |
+| Vedesh Pandya  | [@VedeshP](https://github.com/VedeshP)                     |
 
 ---
 
-## 🌟 Star This Repo
+## 📜 License
 
-If you found this project helpful or interesting, please consider giving it a ⭐️ to support the work!
+Licensed under the [MIT License](LICENSE).
 
+---
 
+## 🌟 Show Some Love
 
+If you like this project, consider giving it a ⭐️
+It helps the repository grow and shows appreciation! 🙌
 
+<p align="center">
+  <img src="https://forthebadge.com/images/badges/made-with-python.svg">
+  <img src="https://forthebadge.com/images/badges/powered-by-coffee.svg">
+</p>
+```
